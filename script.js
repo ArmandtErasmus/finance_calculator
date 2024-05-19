@@ -9,6 +9,8 @@ function calculate() {
 
     var totalFees = 0;
     var feeRatioData = [];
+    var returnData = [];
+    var costData = [];
 
     for (var year = 1; year <= term; year++) {
         var beforeFees = amount * (1 + rate);
@@ -21,14 +23,18 @@ function calculate() {
         totalFees += feeAmount;
 
         feeRatioData.push({ year: year, ratio: totalFees / afterFees });
+        returnData.push({ year: year, ratio: amount });
+        costData.push({ year: year, ratio: totalFees });
     }
 
     results.innerHTML += '<p><strong>Summary:</strong> Initial Investment: R' + document.getElementById('amount').value + ', Total Fees Deducted: R' + totalFees.toFixed(2) + ', Total After ' + term + ' Years: R' + amount.toFixed(2) + ' (after fees)' +'</p>';
 
-    plotData(feeRatioData);
+    plotData(feeRatioData, 'feeRatioPlot', 'Yearly Ratio Between Fees and Returns', 'Year', "Fees Ratio");
+    plotData(returnData, 'returnPlot', "Yearly Returns After Fees", 'Year', "Return After Fees");
+    plotData(costData, 'costPlot', "Yearly Fees", 'Year', "Fees");
 }
 
-function plotData(data) {
+function plotData(data, containerId, ptitle, xa, ya) {
     var years = data.map(d => d.year);
     var ratios = data.map(d => d.ratio);
 
@@ -40,14 +46,14 @@ function plotData(data) {
     };
 
     var layout = {
-        title: 'Fees Ratio Over Years',
+        title: ptitle,
         xaxis: {
-            title: 'Year'
+            title: xa
         },
         yaxis: {
-            title: 'Fees Ratio'
+            title: ya
         }
     };
 
-    Plotly.newPlot('plot', [trace], layout);
+    Plotly.newPlot(containerId, [trace], layout);
 }
